@@ -462,8 +462,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd5884085ef9f8846bdb1454186c8fe8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_MazePlayerSetting
-  mPlayers: 8
-  mDifficulty: 0
+  mPlayers: 5
+  mDifficulty: 1
   CM_EASY_GRID_SIZE: 6
   CM_MEDIUM_GRID_SIZE: 7
   CM_HARD_GRID_SIZE: 8
@@ -491,9 +491,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SC_MazeManager
   mAllTiles: []
   mSettings: {fileID: 1753655504}
-  mDefaultTile: {fileID: 4028782265584100762, guid: 1ff24c62c01b4d04fa25c18366232d6d, type: 3}
-  mWalkableTilePrefab: {fileID: 0}
-  mWallTilePrefab: {fileID: 0}
+  mDefaultTile: {fileID: 4028782265584100762, guid: a727d5015ff2846458f89a00d572335b, type: 3}
+  mWalkableTilePrefab: {fileID: 2788358080977392007, guid: b7ac804c898f646448b094b82df60274, type: 3}
+  mWallTilePrefab: {fileID: 8537445476702230360, guid: 91f61a074a386a247a282e0d6ceb5b0b, type: 3}
   mParkingLotTilePrefab: {fileID: 0}
   mHuntedSpawnTilePrefab: {fileID: 0}
   mKillerSpawnTilePrefab: {fileID: 0}

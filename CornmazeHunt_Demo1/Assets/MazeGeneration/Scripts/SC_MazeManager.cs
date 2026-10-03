@@ -31,13 +31,10 @@ public class SC_MazeManager : MonoBehaviour
     private void Start()
     {
         ClearMaze();
-        //Debug.Log("Maze Cleared");
         GenerateObjects();
-        //Debug.Log("Grid Generated");
         GenerateKeyAreas();
-        //Debug.Log("Key Areas Generated");
         DFS();
-        //Debug.Log("Maze Generated");
+        ReplaceModels();
     }
 
     private void ClearMaze()
@@ -143,14 +140,10 @@ public class SC_MazeManager : MonoBehaviour
         Vector2 minSpace = new Vector2(location.x * (gridSize + 1) + 1, location.y * (gridSize + 1) + 1);
         Vector2 maxSpace = new Vector2(minSpace.x + (gridSize - size) - 1, minSpace.y + (gridSize - size) - 1);
 
-        Debug.Log("Min: " + minSpace + " Max: " + maxSpace);
-
         Vector2 topLeft = new Vector2(Mathf.FloorToInt(Random.Range(minSpace.x, maxSpace.x + 0.99f)),
             Mathf.FloorToInt(Random.Range(minSpace.y, maxSpace.y + 0.99f)));
         if (topLeft.x % 2 == 0) { topLeft.x++; }
         if (topLeft.y % 2 == 0) { topLeft.y++; }
-
-        Debug.Log(topLeft);
 
         // Tiles
         for (int i = (int)topLeft.x; i < (int)topLeft.x + size; i++)
@@ -210,11 +203,9 @@ public class SC_MazeManager : MonoBehaviour
         // Exits
         for (int i = 0; i < exits; i++)
         {
-            //Debug.Log(edges.Count);
             int target = Mathf.FloorToInt(Random.Range(0, edges.Count - 0.01f));
             mAllTiles[edges[target]].SetType(SC_MazeTile.TileType.WALKABLE);
             mAllTiles[edges[target]].SetGenerationStatus(SC_MazeTile.GenerationStatus.FULLY_EXPLORED);
-            //Debug.Log("Exit Made At " + mAllTiles[edges[target]].index);
             edges.RemoveAt(target);
         }
     }
@@ -227,48 +218,14 @@ public class SC_MazeManager : MonoBehaviour
         Vector2 minSpace = new Vector2(location.x * (gridSize + 1) + 1, location.y * (gridSize + 1) + 1);
         Vector2 maxSpace = new Vector2(minSpace.x + (gridSize - gridSize) - 1, minSpace.y + (gridSize - gridSize) - 1);
 
-        Debug.Log("Min: " + minSpace + " Max: " + maxSpace);
-
         Vector2 topLeft = new Vector2(Mathf.FloorToInt(Random.Range(minSpace.x, maxSpace.x + 0.99f)),
             Mathf.FloorToInt(Random.Range(minSpace.y, maxSpace.y + 0.99f)));
         if (topLeft.x % 2 == 0) { topLeft.x++; }
         if (topLeft.y % 2 == 0) { topLeft.y++; }
 
-        Debug.Log(topLeft);
-
         List<int> edges = new List<int>();
 
         // Edges
-        for (int i = (int)topLeft.x - 1; i < (int)topLeft.x + gridSize; i++)
-        {
-            int j = (int)topLeft.y - 1;
-
-            if ((i % 2 == 1 || j % 2 == 1) && IsEdgeWall((int)(i * mMazeSize.y) + j))
-            {
-                edges.Add((int)(i * mMazeSize.y) + j);
-            }
-        }
-
-        for (int i = (int)topLeft.x - 1; i < (int)topLeft.x + gridSize; i++)
-        {
-            int j = (int)(topLeft.y + gridSize);
-
-            if ((i % 2 == 1 || j % 2 == 1) && IsEdgeWall((int)(i * mMazeSize.y) + j))
-            {
-                edges.Add((int)(i * mMazeSize.y) + j);
-            }
-        }
-
-        for (int j = (int)topLeft.y - 1; j < (int)topLeft.y + gridSize; j++)
-        {
-            int i = (int)topLeft.x - 1;
-
-            if ((i % 2 == 1 || j % 2 == 1) && IsEdgeWall((int)(i * mMazeSize.y) + j))
-            {
-                edges.Add((int)(i * mMazeSize.y) + j);
-            }
-        }
-
         for (int j = (int)topLeft.y - 1; j < (int)topLeft.y + gridSize; j++)
         {
             int i = (int)(topLeft.x + gridSize);
@@ -280,9 +237,6 @@ public class SC_MazeManager : MonoBehaviour
         }
 
         target = Mathf.FloorToInt(Random.Range(0, edges.Count - 0.01f));
-
-        Debug.Log(target);
-        Debug.Log(edges[target]);
 
         mAllTiles[edges[target]].SetType(SC_MazeTile.TileType.WALKABLE);
         mAllTiles[edges[target]].SetGenerationStatus(SC_MazeTile.GenerationStatus.FULLY_EXPLORED);
@@ -359,5 +313,24 @@ public class SC_MazeManager : MonoBehaviour
         if (otherTile == targetTile + (int)(mMazeSize.y * 2)) { return targetTile + (int)(mMazeSize.y); }
 
         return -1;
+    }
+
+    private void ReplaceModels()
+    {
+        for (int i = 0; i < mAllTiles.Count; i++)
+        {
+            Destroy(mAllTiles[i].GetAttachedObject());
+
+            switch (mAllTiles[i].GetType())
+            {
+                case SC_MazeTile.TileType.WALL:
+                    Instantiate(mWallTilePrefab, mAllTiles[i].gameObject.transform);
+                    break;
+
+                default:
+                    Instantiate(mWalkableTilePrefab, mAllTiles[i].gameObject.transform);
+                    break;
+            }
+        }
     }
 }
