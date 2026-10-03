@@ -107,3 +107,6 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+/CornmazeHunt_Demo1/Library
+/CornmazeHunt_Demo1/obj
+/CornmazeHunt_Demo1/UserSettings
