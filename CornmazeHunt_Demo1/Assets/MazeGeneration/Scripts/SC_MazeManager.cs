@@ -9,6 +9,24 @@ using static UnityEngine.InputSystem.InputSettings;
 
 public class SC_MazeManager : MonoBehaviour
 {
+    public enum GameMode
+    {
+        COLLECT,
+        ESCAPE
+    }
+
+    private enum AreaType
+    {
+        NONE,
+        COLLECTABLE,
+        KILLER_SPAWN,
+        HUNTED_SPAWN,
+        SCARECROW
+    }
+
+
+    [SerializeField] private GameMode gameMode = GameMode.COLLECT;
+
     [SerializeField] private List<SC_MazeTile> mAllTiles = new List<SC_MazeTile>();
 
     [SerializeField] private SC_MazePlayerSetting mSettings;
@@ -18,10 +36,12 @@ public class SC_MazeManager : MonoBehaviour
     [SerializeField] private GameObject mWalkableTilePrefab;
     [SerializeField] private GameObject mWallTilePrefab;
     [SerializeField] private GameObject mParkingLotTilePrefab;
-    [SerializeField] private GameObject mHuntedSpawnTilePrefab;
+    [SerializeField] private GameObject mHuntedSpawnTilePrefab_Collect;
+    [SerializeField] private GameObject mHuntedSpawnTilePrefab_Escape;
     [SerializeField] private GameObject mKillerSpawnTilePrefab;
     [SerializeField] private GameObject mCollectableSpawnTilePrefab;
     [SerializeField] private GameObject mScarecrowTilePrefab;
+    [SerializeField] private GameObject mExteriorTilePrefab;
 
     private Stack<int> mExplorationStack = new Stack<int>();
 
@@ -32,7 +52,16 @@ public class SC_MazeManager : MonoBehaviour
     {
         ClearMaze();
         GenerateObjects();
-        GenerateKeyAreas();
+
+        if (gameMode == GameMode.COLLECT)
+        {
+            GenerateKeyAreasCollect();
+        }
+        else
+        {
+            GenerateKeyAreasEscape();
+        }
+
         DFS();
         ReplaceModels();
     }
@@ -85,7 +114,7 @@ public class SC_MazeManager : MonoBehaviour
         }
     }
 
-    private void GenerateKeyAreas()
+    private void GenerateKeyAreasEscape()
     {
         List<Vector2> possibleGridSpaces = new List<Vector2>();
         for (int i = 0; i < mSettings.GetGridSpaces().x; i++)
@@ -96,16 +125,81 @@ public class SC_MazeManager : MonoBehaviour
             }
         }
 
-        // CORNER AREA 1
-        CreateArea(new Vector2(0, 0), (int) mSettings.GetCornerAreaSize().x, 2);
+        // CORNER AREA 1 & 2
+        int rand = Mathf.FloorToInt(Random.Range(0, 1.99f));
+
+        if (rand == 0)
+        {
+            CreateArea(new Vector2(0, 0), (int)mSettings.GetCornerAreaSize().x, 2, AreaType.SCARECROW);
+            possibleGridSpaces.Remove(new Vector2(0, 0));
+
+            CreateArea(new Vector2(0, mSettings.GetGridSpaces().y - 1), (int)mSettings.GetCornerAreaSize().x, 2, AreaType.KILLER_SPAWN);
+            possibleGridSpaces.Remove(new Vector2(0, mSettings.GetGridSpaces().y - 1));
+        }
+        else
+        {
+            CreateArea(new Vector2(0, 0), (int)mSettings.GetCornerAreaSize().x, 2, AreaType.KILLER_SPAWN);
+            possibleGridSpaces.Remove(new Vector2(0, 0));
+
+            CreateArea(new Vector2(0, mSettings.GetGridSpaces().y - 1), (int)mSettings.GetCornerAreaSize().x, 2, AreaType.SCARECROW);
+            possibleGridSpaces.Remove(new Vector2(0, mSettings.GetGridSpaces().y - 1));
+        }
+
+        // CENTER AREA 
+        CreateArea(new Vector2((int)mSettings.GetGridSpaces().x / 2, (int)mSettings.GetGridSpaces().y / 2), (int)mSettings.GetCenterAreaSize().x, 4, AreaType.HUNTED_SPAWN);
+        possibleGridSpaces.Remove(new Vector2((int)mSettings.GetGridSpaces().x / 2, (int)mSettings.GetGridSpaces().y / 2));
+
+        // EXITS
+        List<Vector2> exitTiles = new List<Vector2>();
+
+        for (int i = 0; i < mSettings.GetGridSpaces().y; i++)
+        {
+            exitTiles.Add(new Vector2(mSettings.GetGridSpaces().x - 1, i));
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            int target = Mathf.FloorToInt(Random.Range(0, exitTiles.Count - 0.01f));
+            CreateExit(exitTiles[target]);
+            possibleGridSpaces.Remove(exitTiles[target]);
+            exitTiles.Remove(exitTiles[target]);
+        }
+
+        // COLLECTABLE AREAS
+        for (int i = 0; i < Mathf.FloorToInt(mSettings.GetNumCollectableAreas() / 2); i++)
+        {
+            int target = Mathf.FloorToInt(Random.Range(0, possibleGridSpaces.Count - 0.01f));
+            CreateArea(possibleGridSpaces[target], (int)mSettings.GetCollectableAreaSize().x, 1, AreaType.NONE);
+            possibleGridSpaces.Remove(possibleGridSpaces[target]);
+        }
+        for (int i = 0; i < Mathf.CeilToInt(mSettings.GetNumCollectableAreas() / 2); i++)
+        {
+            int target = Mathf.FloorToInt(Random.Range(0, possibleGridSpaces.Count - 0.01f));
+            CreateArea(possibleGridSpaces[target], (int)mSettings.GetCollectableAreaSize().x, 1, AreaType.SCARECROW);
+            possibleGridSpaces.Remove(possibleGridSpaces[target]);
+        }
+    }
+
+    private void GenerateKeyAreasCollect()
+    {
+        List<Vector2> possibleGridSpaces = new List<Vector2>();
+        for (int i = 0; i < mSettings.GetGridSpaces().x; i++)
+        {
+            for (int j = 0; j < mSettings.GetGridSpaces().y; j++)
+            {
+                possibleGridSpaces.Add(new Vector2(i, j));
+            }
+        }
+
+        // CORNER AREA 1 & 2
+        CreateArea(new Vector2(0, 0), (int)mSettings.GetCornerAreaSize().x, 2, AreaType.SCARECROW);
         possibleGridSpaces.Remove(new Vector2(0, 0));
 
-        // CORNER AREA 2
-        CreateArea(new Vector2(0, mSettings.GetGridSpaces().y - 1), (int)mSettings.GetCornerAreaSize().x, 2);
+        CreateArea(new Vector2(0, mSettings.GetGridSpaces().y - 1), (int)mSettings.GetCornerAreaSize().x, 2, AreaType.SCARECROW);
         possibleGridSpaces.Remove(new Vector2(0, mSettings.GetGridSpaces().y - 1));
 
         // CENTER AREA 
-        CreateArea(new Vector2((int)mSettings.GetGridSpaces().x / 2, (int)mSettings.GetGridSpaces().y / 2), (int)mSettings.GetCenterAreaSize().x, 4);
+        CreateArea(new Vector2((int)mSettings.GetGridSpaces().x / 2, (int)mSettings.GetGridSpaces().y / 2), (int)mSettings.GetCenterAreaSize().x, 4, AreaType.KILLER_SPAWN);
         possibleGridSpaces.Remove(new Vector2((int)mSettings.GetGridSpaces().x / 2, (int)mSettings.GetGridSpaces().y / 2));
 
         // EXITS
@@ -127,13 +221,13 @@ public class SC_MazeManager : MonoBehaviour
         // COLLECTABLE AREAS
         for (int i = 0; i < mSettings.GetNumCollectableAreas(); i++)
         {
-            int target = Mathf.FloorToInt(Random.Range(0, exitTiles.Count - 0.01f));
-            CreateArea(possibleGridSpaces[target], (int)mSettings.GetCollectableAreaSize().x, 1);
+            int target = Mathf.FloorToInt(Random.Range(0, possibleGridSpaces.Count - 0.01f));
+            CreateArea(possibleGridSpaces[target], (int)mSettings.GetCollectableAreaSize().x, 1, AreaType.COLLECTABLE);
             possibleGridSpaces.Remove(possibleGridSpaces[target]);
         }
     }
 
-    private void CreateArea(Vector2 location, int size, int exits)
+    private void CreateArea(Vector2 location, int size, int exits, AreaType type)
     {
         int gridSize = (mSettings.GetMazeGridSize() * 2) - 1;
 
@@ -155,6 +249,35 @@ public class SC_MazeManager : MonoBehaviour
                 mAllTiles[target].SetType(SC_MazeTile.TileType.WALKABLE);
                 mAllTiles[target].SetGenerationStatus(SC_MazeTile.GenerationStatus.FULLY_EXPLORED);
             }
+        }
+
+        // Special Tiles
+        if (type != AreaType.NONE)
+        {
+            int x = (int)topLeft.x + (size / 2);
+            int y = (int)topLeft.y + (size / 2);
+
+            switch (type)
+            {
+                case AreaType.SCARECROW:
+                    mAllTiles[(int)(x * mMazeSize.y) + y].SetType(SC_MazeTile.TileType.SCARECROW);
+                    break;
+
+                case AreaType.KILLER_SPAWN:
+                    mAllTiles[(int)(x * mMazeSize.y) + y].SetType(SC_MazeTile.TileType.KILLER_SPAWN);
+                    break;
+
+                case AreaType.HUNTED_SPAWN:
+                    mAllTiles[(int)(x * mMazeSize.y) + y].SetType(SC_MazeTile.TileType.HUNTED_SPAWN);
+                    break;
+
+                case AreaType.COLLECTABLE:
+                default:
+                    mAllTiles[(int)(x * mMazeSize.y) + y].SetType(SC_MazeTile.TileType.COLLECTABLE_SPAWN);
+                    break;
+            }
+
+            
         }
 
         List<int> edges = new List<int>();
@@ -321,12 +444,42 @@ public class SC_MazeManager : MonoBehaviour
         {
             Destroy(mAllTiles[i].GetAttachedObject());
 
+            GameObject temp;
+            float rotation;
+
             switch (mAllTiles[i].GetType())
             {
                 case SC_MazeTile.TileType.WALL:
                     Instantiate(mWallTilePrefab, mAllTiles[i].gameObject.transform);
                     break;
 
+                case SC_MazeTile.TileType.HUNTED_SPAWN:
+                    temp = Instantiate(mHuntedSpawnTilePrefab_Escape, mAllTiles[i].gameObject.transform);
+
+                    rotation = Mathf.Floor(Random.Range(0, 3.99f)) * 90;
+                    temp.transform.rotation = Quaternion.Euler(new Vector3(0, rotation, 0));
+                    break;
+
+                case SC_MazeTile.TileType.KILLER_SPAWN:
+                    
+                    temp = Instantiate(mKillerSpawnTilePrefab, mAllTiles[i].gameObject.transform);
+
+                    rotation = Mathf.Floor(Random.Range(0, 3.99f)) * 90;
+                    temp.transform.rotation = Quaternion.Euler(new Vector3(0, rotation, 0));
+                    break;
+
+                case SC_MazeTile.TileType.COLLECTABLE_SPAWN:
+                    Instantiate(mCollectableSpawnTilePrefab, mAllTiles[i].gameObject.transform);
+                    break;
+
+                case SC_MazeTile.TileType.SCARECROW:
+                    temp = Instantiate(mScarecrowTilePrefab, mAllTiles[i].gameObject.transform);
+
+                    rotation = Mathf.Floor(Random.Range(0, 3.99f)) * 90;
+                    temp.transform.rotation = Quaternion.Euler(new Vector3(0, rotation, 0));
+                    break;
+
+                case SC_MazeTile.TileType.WALKABLE:
                 default:
                     Instantiate(mWalkableTilePrefab, mAllTiles[i].gameObject.transform);
                     break;

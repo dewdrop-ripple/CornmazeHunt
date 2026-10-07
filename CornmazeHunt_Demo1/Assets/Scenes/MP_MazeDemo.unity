@@ -489,16 +489,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edfa95dd2f963a04c9dd56ed59921377, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_MazeManager
+  gameMode: 1
   mAllTiles: []
   mSettings: {fileID: 1753655504}
   mDefaultTile: {fileID: 4028782265584100762, guid: a727d5015ff2846458f89a00d572335b, type: 3}
   mWalkableTilePrefab: {fileID: 2788358080977392007, guid: b7ac804c898f646448b094b82df60274, type: 3}
   mWallTilePrefab: {fileID: 8537445476702230360, guid: 91f61a074a386a247a282e0d6ceb5b0b, type: 3}
-  mParkingLotTilePrefab: {fileID: 0}
-  mHuntedSpawnTilePrefab: {fileID: 0}
-  mKillerSpawnTilePrefab: {fileID: 0}
-  mCollectableSpawnTilePrefab: {fileID: 0}
-  mScarecrowTilePrefab: {fileID: 0}
+  mParkingLotTilePrefab: {fileID: 2788358080977392007, guid: dd3785777f5fdf349b1d7d7473e08b90, type: 3}
+  mHuntedSpawnTilePrefab_Collect: {fileID: 2788358080977392007, guid: d4657dc46a44fb74d90993f644ca7b2a, type: 3}
+  mHuntedSpawnTilePrefab_Escape: {fileID: 2788358080977392007, guid: 55eaa829f96208f4998a77c3de18b354, type: 3}
+  mKillerSpawnTilePrefab: {fileID: 2788358080977392007, guid: 825eb810f8dbfd648a0e359360281841, type: 3}
+  mCollectableSpawnTilePrefab: {fileID: 2788358080977392007, guid: ed3a4ab1d88d55a4b8b9d325db5530cb, type: 3}
+  mScarecrowTilePrefab: {fileID: 2788358080977392007, guid: 355cc790252f31546af2208d373ce8df, type: 3}
+  mExteriorTilePrefab: {fileID: 8537445476702230360, guid: cd1a8af2eef102c4cbdba0305ff4bca0, type: 3}
 --- !u!4 &1753655506
 Transform:
   m_ObjectHideFlags: 0
