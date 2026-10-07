@@ -31,7 +31,7 @@ public class SC_MazeTile : MonoBehaviour
     [SerializeField] private GameObject mAttachedObject;
 
     public void SetType(TileType type) { mType = type; }
-    public TileType GetType() { return mType; }
+    public TileType GetTileType() { return mType; }
 
     public void SetGenerationStatus(GenerationStatus status) { mGenerationStatus = status; }
     public GenerationStatus GetGenerationStatus() { return mGenerationStatus; }

@@ -19,7 +19,7 @@ public class SC_DEMO_DefaultMazeTile : MonoBehaviour
 
     private void Update()
     {
-        if (mazeTile.GetType() == SC_MazeTile.TileType.WALL)
+        if (mazeTile.GetTileType() == SC_MazeTile.TileType.WALL)
         {
             mazeTile.SetTileSize(wallSize);
             mazeTile.GetAttachedObject().GetComponent<Renderer>().material = wallMaterial;

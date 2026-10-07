@@ -452,7 +452,7 @@ public class SC_MazeManager : MonoBehaviour
             GameObject temp;
             float rotation;
 
-            switch (mAllTiles[i].GetType())
+            switch (mAllTiles[i].GetTileType())
             {
                 case SC_MazeTile.TileType.WALL:
                     Instantiate(mWallTilePrefab, mAllTiles[i].gameObject.transform);
