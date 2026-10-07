@@ -25,7 +25,9 @@ public class SC_MazeManager : MonoBehaviour
     }
 
 
-    [SerializeField] private GameMode gameMode = GameMode.COLLECT;
+    [SerializeField] private GameMode mGameMode = GameMode.COLLECT;
+
+    [SerializeField] private float mBorderWidth;
 
     [SerializeField] private List<SC_MazeTile> mAllTiles = new List<SC_MazeTile>();
 
@@ -43,6 +45,7 @@ public class SC_MazeManager : MonoBehaviour
     [SerializeField] private GameObject mScarecrowTilePrefab;
     [SerializeField] private GameObject mExteriorTilePrefab;
 
+
     private Stack<int> mExplorationStack = new Stack<int>();
 
     private Vector2 mMazeSize;
@@ -53,7 +56,7 @@ public class SC_MazeManager : MonoBehaviour
         ClearMaze();
         GenerateObjects();
 
-        if (gameMode == GameMode.COLLECT)
+        if (mGameMode == GameMode.COLLECT)
         {
             GenerateKeyAreasCollect();
         }
@@ -64,6 +67,8 @@ public class SC_MazeManager : MonoBehaviour
 
         DFS();
         ReplaceModels();
+
+        CreateBorders();
     }
 
     private void ClearMaze()
@@ -485,5 +490,75 @@ public class SC_MazeManager : MonoBehaviour
                     break;
             }
         }
+    }
+
+    private void CreateBorders()
+    {
+        float tileSize = mDefaultTile.GetComponent<SC_MazeTile>().GetAttachedObject().transform.lossyScale.x;
+        float mazeWidth = (mSettings.GetMazeSizeTiles().y * 2 + 1);
+        float mazeHeight = (mSettings.GetMazeSizeTiles().x * 2 + 1);
+
+        GameObject temp;
+
+        // Left area
+        temp = Instantiate(mExteriorTilePrefab);
+        temp.transform.localScale = new Vector3(mazeHeight + mBorderWidth + 2, 1, mBorderWidth);
+        temp.transform.position = new Vector3((mazeHeight + mBorderWidth + 1) * (tileSize / 2), 0,(mBorderWidth + 1) * (tileSize / -2));
+
+        // Right area
+        temp = Instantiate(mExteriorTilePrefab);
+        temp.transform.localScale = new Vector3(mazeHeight + mBorderWidth + 2, 1, mBorderWidth);
+        temp.transform.position = new Vector3((mazeHeight + mBorderWidth + 1) * (tileSize / 2), 0, ((2 * mazeWidth) + mBorderWidth - 1) * (tileSize / 2));
+
+        // Top area
+        temp = Instantiate(mExteriorTilePrefab);
+        temp.transform.localScale = new Vector3(mBorderWidth, 1, mazeWidth + (mBorderWidth * 2));
+        temp.transform.position = new Vector3((mBorderWidth + 1) * (tileSize / -2), 0, (mazeWidth - 1) * (tileSize / 2));
+
+        // Bottom area 1
+        temp = Instantiate(mExteriorTilePrefab);
+        temp.transform.localScale = new Vector3(1, 1, mazeWidth);
+        temp.transform.position = new Vector3(mazeHeight * tileSize, 0, (mazeWidth - 1) * (tileSize / 2));
+
+        // Bottom area 2
+        temp = Instantiate(mExteriorTilePrefab);
+        temp.transform.localScale = new Vector3(3, 1, mazeWidth);
+        temp.transform.position = new Vector3((mBorderWidth + mazeHeight) * tileSize, 0, (mazeWidth - 1) * (tileSize / 2));
+
+        // Parking area 1
+        if (mGameMode == GameMode.ESCAPE)
+        {
+            temp = Instantiate(mParkingLotTilePrefab);
+            temp.transform.localScale = new Vector3(1, 1, mazeWidth);
+            temp.transform.position = new Vector3(tileSize * (mazeHeight + 1), 0, (mazeWidth - 1) * (tileSize / 2));
+        }
+        else
+        {
+            float w = ((mazeWidth - 3) / 4);
+            float x = tileSize * (mazeHeight + 1);
+
+            float currentW = (w - 1) * tileSize / 2;
+
+            for (int i = 0; i < 3; i++)
+            {
+                temp = Instantiate(mParkingLotTilePrefab);
+                temp.transform.localScale = new Vector3(1, 1, w);
+                temp.transform.position = new Vector3(x, 0, currentW);
+
+                currentW += tileSize * (1 + w);
+
+                temp = Instantiate(mHuntedSpawnTilePrefab_Collect);
+                temp.transform.position = new Vector3(x, 0, currentW - ((tileSize / 2) * (w + 1)));
+            }
+
+            temp = Instantiate(mParkingLotTilePrefab);
+            temp.transform.localScale = new Vector3(1, 1, w);
+            temp.transform.position = new Vector3(x, 0, currentW);
+        }
+
+        // Parking area 2
+        temp = Instantiate(mParkingLotTilePrefab);
+        temp.transform.localScale = new Vector3(mBorderWidth - 3, 1, mazeWidth);
+        temp.transform.position = new Vector3((tileSize / 2) * (mBorderWidth + (mazeHeight * 2)), 0, (mazeWidth - 1) * (tileSize / 2));
     }
 }

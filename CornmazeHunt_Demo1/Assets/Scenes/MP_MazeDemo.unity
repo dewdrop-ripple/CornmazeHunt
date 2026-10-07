@@ -462,8 +462,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd5884085ef9f8846bdb1454186c8fe8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_MazePlayerSetting
-  mPlayers: 5
-  mDifficulty: 1
+  mPlayers: 3
+  mDifficulty: 0
   CM_EASY_GRID_SIZE: 6
   CM_MEDIUM_GRID_SIZE: 7
   CM_HARD_GRID_SIZE: 8
@@ -489,7 +489,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edfa95dd2f963a04c9dd56ed59921377, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_MazeManager
-  gameMode: 1
+  mGameMode: 0
+  mBorderWidth: 15
   mAllTiles: []
   mSettings: {fileID: 1753655504}
   mDefaultTile: {fileID: 4028782265584100762, guid: a727d5015ff2846458f89a00d572335b, type: 3}
