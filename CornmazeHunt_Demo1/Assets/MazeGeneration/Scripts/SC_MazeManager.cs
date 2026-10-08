@@ -45,7 +45,6 @@ public class SC_MazeManager : MonoBehaviour
     [SerializeField] private GameObject mScarecrowTilePrefab;
     [SerializeField] private GameObject mExteriorTilePrefab;
 
-
     private Stack<int> mExplorationStack = new Stack<int>();
 
     private Vector2 mMazeSize;
@@ -429,6 +428,18 @@ public class SC_MazeManager : MonoBehaviour
         return result;
     }
 
+    private List<int> GetAllNeighbors(int tile)
+    {
+        List<int> result = new List<int>();
+
+        if (tile % mMazeSize.y != 0) { result.Add(tile - 1); }
+        if (tile % mMazeSize.y != mMazeSize.y - 1) { result.Add(tile + 1); }
+        if (tile > mMazeSize.y) { result.Add(tile - (int)(mMazeSize.y)); }
+        if (tile < mAllTiles.Count - (mMazeSize.y)) { result.Add(tile + (int)(mMazeSize.y)); }
+
+        return result;
+    }
+
     private bool IsEdgeWall(int tile)
     {
         return (tile % mMazeSize.y == 0) || (tile % mMazeSize.y == mMazeSize.y - 1)
@@ -566,4 +577,60 @@ public class SC_MazeManager : MonoBehaviour
     }
 
     public float GetTileSize() { return mDefaultTile.GetComponent<SC_MazeTile>().GetAttachedObject().transform.lossyScale.x; }
+
+    public int GetTileIndex(Vector3 position)
+    {
+        int yTileIndex = Mathf.FloorToInt(position.z / GetTileSize());
+        int xTileIndex = Mathf.FloorToInt(position.x / GetTileSize());
+
+        return (int) (xTileIndex * mMazeSize.y) + yTileIndex;
+    }
+
+    public List<int> GetAllTilesInRadius(int startingIndex, int radius)
+    {
+        List<int> returnList = new List<int>();
+
+        List<int> newTiles = new List<int>();
+        newTiles.Add(startingIndex);
+
+        for (int i = 0; i < radius; i++)
+        {
+            List<int> newNewTiles = new List<int>();
+
+            for (int j = 0; j < newTiles.Count; j++)
+            {
+                List<int> neighbors = GetAllNeighbors(newTiles[j]);
+
+                for (int k = 0; k < neighbors.Count; k++)
+                {
+                    if (!returnList.Contains(neighbors[k]))
+                    {
+                        newNewTiles.Add(neighbors[k]);
+                        returnList.Add(neighbors[k]);
+                    }
+                }
+            }
+
+            newTiles = newNewTiles;
+        }
+
+        return returnList;
+    }
+
+    public void SetTilesFilledIn(List<int> tiles, bool isFilledIn)
+    {
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            mAllTiles[tiles[i]].GetComponent<SC_MazeTile>().SetFilledIn(isFilledIn);
+        }
+    }
+
+    public void FillInTilesAroundSpot(Vector3 position, int radius)
+    {
+        int tile = GetTileIndex(position);
+
+        if (tile > mAllTiles.Count) { return; }
+
+        SetTilesFilledIn(GetAllTilesInRadius(tile, radius), true);
+    }
 }

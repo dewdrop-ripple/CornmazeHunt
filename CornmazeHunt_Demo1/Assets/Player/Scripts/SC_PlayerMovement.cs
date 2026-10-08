@@ -46,6 +46,8 @@ public class SC_PlayerMovement : MonoBehaviour
 
     // Start Delay
     [SerializeField] private bool mIsEnabled = false;
+
+    [SerializeField] private int mMapFillInRadius = 3;
     
 
     private void Start()
@@ -152,6 +154,12 @@ public class SC_PlayerMovement : MonoBehaviour
         else
         {
             mMovementSetting = PlayerMovementSetting.WALK;
+        }
+
+        // RMB
+        if (Input.GetMouseButtonDown(1))
+        {
+            FindAnyObjectByType<SC_MazeManager>().FillInTilesAroundSpot(transform.position, mMapFillInRadius);
         }
 
         switch (mMovementSetting)
