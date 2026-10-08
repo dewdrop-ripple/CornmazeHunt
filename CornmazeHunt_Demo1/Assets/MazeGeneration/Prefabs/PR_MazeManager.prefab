@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1266850166537663619}
   - component: {fileID: 3819477091205974131}
-  - component: {fileID: 2755177176722491491}
   m_Layer: 0
   m_Name: PR_MazeManager
   m_TagString: Untagged
@@ -48,7 +47,7 @@ MonoBehaviour:
   mGameMode: 0
   mBorderWidth: 15
   mAllTiles: []
-  mSettings: {fileID: 2755177176722491491}
+  mSettings: {fileID: 0}
   mDefaultTile: {fileID: 4028782265584100762, guid: a727d5015ff2846458f89a00d572335b, type: 3}
   mWalkableTilePrefab: {fileID: 2788358080977392007, guid: b7ac804c898f646448b094b82df60274, type: 3}
   mWallTilePrefab: {fileID: 8537445476702230360, guid: 91f61a074a386a247a282e0d6ceb5b0b, type: 3}
@@ -59,30 +58,3 @@ MonoBehaviour:
   mCollectableSpawnTilePrefab: {fileID: 2788358080977392007, guid: ed3a4ab1d88d55a4b8b9d325db5530cb, type: 3}
   mScarecrowTilePrefab: {fileID: 2788358080977392007, guid: 355cc790252f31546af2208d373ce8df, type: 3}
   mExteriorTilePrefab: {fileID: 8537445476702230360, guid: cd1a8af2eef102c4cbdba0305ff4bca0, type: 3}
---- !u!114 &2755177176722491491
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4163449859646429892}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd5884085ef9f8846bdb1454186c8fe8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SC_MazePlayerSetting
-  mPlayers: 3
-  mDifficulty: 0
-  CM_EASY_GRID_SIZE: 6
-  CM_MEDIUM_GRID_SIZE: 7
-  CM_HARD_GRID_SIZE: 8
-  CM_2_PLAYER_SIZE: {x: 3, y: 4}
-  CM_3_PLAYER_SIZE: {x: 4, y: 4}
-  CM_4_PLAYER_SIZE: {x: 4, y: 5}
-  CM_5_PLAYER_SIZE: {x: 4, y: 5}
-  CM_6_PLAYER_SIZE: {x: 5, y: 5}
-  CM_7_PLAYER_SIZE: {x: 5, y: 5}
-  CM_8_PLAYER_SIZE: {x: 5, y: 6}
-  CM_COLLECTABLE_AREA_SIZE: {x: 3, y: 3}
-  CM_CENTER_AREA_SIZE: {x: 7, y: 7}
-  CM_CORNER_AREA_SIZE: {x: 5, y: 5}

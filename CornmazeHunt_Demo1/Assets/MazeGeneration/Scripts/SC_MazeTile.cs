@@ -30,6 +30,8 @@ public class SC_MazeTile : MonoBehaviour
 
     [SerializeField] private GameObject mAttachedObject;
 
+    [SerializeField] private bool mIsFilledIn = false;
+
     public void SetType(TileType type) { mType = type; }
     public TileType GetTileType() { return mType; }
 
@@ -39,4 +41,7 @@ public class SC_MazeTile : MonoBehaviour
     public Vector3 GetTileSize() { return mAttachedObject.transform.lossyScale; }
     public void SetTileSize(Vector3 size) { mAttachedObject.transform.localScale = size; }
     public GameObject GetAttachedObject() { return mAttachedObject; }
+
+    public bool IsFilledIn() { return mIsFilledIn; }
+    public void SetFilledIn(bool isFilledIn) { mIsFilledIn = isFilledIn; }
 }

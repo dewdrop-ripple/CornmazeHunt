@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7862303734581468228}
   - component: {fileID: 898433742666271164}
+  - component: {fileID: -3575359036943455304}
   m_Layer: 0
-  m_Name: SC_GameManager
+  m_Name: PR_GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,3 +46,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SC_GameManager
   mPlayerPrefab: {fileID: 2076527533063171752, guid: d2b8c8c3c272c9a4ab8eea12e6e76cca, type: 3}
+  mMazeSettings: {fileID: -3575359036943455304}
+--- !u!114 &-3575359036943455304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8011789318929344343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd5884085ef9f8846bdb1454186c8fe8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SC_MazePlayerSetting
+  mPlayers: 2
+  mDifficulty: 0
+  CM_EASY_GRID_SIZE: 6
+  CM_MEDIUM_GRID_SIZE: 7
+  CM_HARD_GRID_SIZE: 8
+  CM_2_PLAYER_SIZE: {x: 3, y: 4}
+  CM_3_PLAYER_SIZE: {x: 4, y: 4}
+  CM_4_PLAYER_SIZE: {x: 4, y: 5}
+  CM_5_PLAYER_SIZE: {x: 4, y: 5}
+  CM_6_PLAYER_SIZE: {x: 5, y: 5}
+  CM_7_PLAYER_SIZE: {x: 5, y: 5}
+  CM_8_PLAYER_SIZE: {x: 5, y: 6}
+  CM_COLLECTABLE_AREA_SIZE: {x: 3, y: 3}
+  CM_CENTER_AREA_SIZE: {x: 7, y: 7}
+  CM_CORNER_AREA_SIZE: {x: 5, y: 5}

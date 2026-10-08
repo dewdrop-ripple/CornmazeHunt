@@ -4,9 +4,8 @@ public class SC_GameManager : MonoBehaviour
 {
     [SerializeField] private GameObject mPlayerPrefab;
 
-    private SC_MazePlayerSetting mMazeSettings;
+    [SerializeField] private SC_MazePlayerSetting mMazeSettings;
     
-
     private void Update()
     {
         SC_PlayerMovement[] players = FindObjectsByType<SC_PlayerMovement>();
@@ -19,4 +18,6 @@ public class SC_GameManager : MonoBehaviour
             GameObject temp = Instantiate(mPlayerPrefab, spawns[r].transform);
         }
     }
+
+    public SC_MazePlayerSetting GetMazePlayerSetting() { return mMazeSettings; }
 }

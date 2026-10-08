@@ -31,7 +31,7 @@ public class SC_MazeManager : MonoBehaviour
 
     [SerializeField] private List<SC_MazeTile> mAllTiles = new List<SC_MazeTile>();
 
-    [SerializeField] private SC_MazePlayerSetting mSettings;
+    private SC_GameManager mManager;
 
     [SerializeField] private GameObject mDefaultTile;
 
@@ -53,6 +53,8 @@ public class SC_MazeManager : MonoBehaviour
 
     private void Start()
     {
+        mManager = FindAnyObjectByType<SC_GameManager>();
+
         ClearMaze();
         GenerateObjects();
 
@@ -84,7 +86,7 @@ public class SC_MazeManager : MonoBehaviour
     private void GenerateObjects()
     {
         // The actual size of the grid, taking into account walls, will be double the number of walkable tiles in each direction + 1
-        mMazeSize = mSettings.GetMazeSizeTiles() * 2;
+        mMazeSize = mManager.GetMazePlayerSetting().GetMazeSizeTiles() * 2;
         mMazeSize.x++;
         mMazeSize.y++;
 
@@ -122,9 +124,9 @@ public class SC_MazeManager : MonoBehaviour
     private void GenerateKeyAreasEscape()
     {
         List<Vector2> possibleGridSpaces = new List<Vector2>();
-        for (int i = 0; i < mSettings.GetGridSpaces().x; i++)
+        for (int i = 0; i < mManager.GetMazePlayerSetting().GetGridSpaces().x; i++)
         {
-            for (int j = 0; j < mSettings.GetGridSpaces().y; j++)
+            for (int j = 0; j < mManager.GetMazePlayerSetting().GetGridSpaces().y; j++)
             {
                 possibleGridSpaces.Add(new Vector2(i, j));
             }
@@ -135,31 +137,31 @@ public class SC_MazeManager : MonoBehaviour
 
         if (rand == 0)
         {
-            CreateArea(new Vector2(0, 0), (int)mSettings.GetCornerAreaSize().x, 2, AreaType.SCARECROW);
+            CreateArea(new Vector2(0, 0), (int)mManager.GetMazePlayerSetting().GetCornerAreaSize().x, 2, AreaType.SCARECROW);
             possibleGridSpaces.Remove(new Vector2(0, 0));
 
-            CreateArea(new Vector2(0, mSettings.GetGridSpaces().y - 1), (int)mSettings.GetCornerAreaSize().x, 2, AreaType.KILLER_SPAWN);
-            possibleGridSpaces.Remove(new Vector2(0, mSettings.GetGridSpaces().y - 1));
+            CreateArea(new Vector2(0, mManager.GetMazePlayerSetting().GetGridSpaces().y - 1), (int)mManager.GetMazePlayerSetting().GetCornerAreaSize().x, 2, AreaType.KILLER_SPAWN);
+            possibleGridSpaces.Remove(new Vector2(0, mManager.GetMazePlayerSetting().GetGridSpaces().y - 1));
         }
         else
         {
-            CreateArea(new Vector2(0, 0), (int)mSettings.GetCornerAreaSize().x, 2, AreaType.KILLER_SPAWN);
+            CreateArea(new Vector2(0, 0), (int)mManager.GetMazePlayerSetting().GetCornerAreaSize().x, 2, AreaType.KILLER_SPAWN);
             possibleGridSpaces.Remove(new Vector2(0, 0));
 
-            CreateArea(new Vector2(0, mSettings.GetGridSpaces().y - 1), (int)mSettings.GetCornerAreaSize().x, 2, AreaType.SCARECROW);
-            possibleGridSpaces.Remove(new Vector2(0, mSettings.GetGridSpaces().y - 1));
+            CreateArea(new Vector2(0, mManager.GetMazePlayerSetting().GetGridSpaces().y - 1), (int)mManager.GetMazePlayerSetting().GetCornerAreaSize().x, 2, AreaType.SCARECROW);
+            possibleGridSpaces.Remove(new Vector2(0, mManager.GetMazePlayerSetting().GetGridSpaces().y - 1));
         }
 
         // CENTER AREA 
-        CreateArea(new Vector2((int)mSettings.GetGridSpaces().x / 2, (int)mSettings.GetGridSpaces().y / 2), (int)mSettings.GetCenterAreaSize().x, 4, AreaType.HUNTED_SPAWN);
-        possibleGridSpaces.Remove(new Vector2((int)mSettings.GetGridSpaces().x / 2, (int)mSettings.GetGridSpaces().y / 2));
+        CreateArea(new Vector2((int)mManager.GetMazePlayerSetting().GetGridSpaces().x / 2, (int)mManager.GetMazePlayerSetting().GetGridSpaces().y / 2), (int)mManager.GetMazePlayerSetting().GetCenterAreaSize().x, 4, AreaType.HUNTED_SPAWN);
+        possibleGridSpaces.Remove(new Vector2((int)mManager.GetMazePlayerSetting().GetGridSpaces().x / 2, (int)mManager.GetMazePlayerSetting().GetGridSpaces().y / 2));
 
         // EXITS
         List<Vector2> exitTiles = new List<Vector2>();
 
-        for (int i = 0; i < mSettings.GetGridSpaces().y; i++)
+        for (int i = 0; i < mManager.GetMazePlayerSetting().GetGridSpaces().y; i++)
         {
-            exitTiles.Add(new Vector2(mSettings.GetGridSpaces().x - 1, i));
+            exitTiles.Add(new Vector2(mManager.GetMazePlayerSetting().GetGridSpaces().x - 1, i));
         }
 
         for (int i = 0; i < 3; i++)
@@ -171,16 +173,16 @@ public class SC_MazeManager : MonoBehaviour
         }
 
         // COLLECTABLE AREAS
-        for (int i = 0; i < Mathf.FloorToInt(mSettings.GetNumCollectableAreas() / 2); i++)
+        for (int i = 0; i < Mathf.FloorToInt(mManager.GetMazePlayerSetting().GetNumCollectableAreas() / 2); i++)
         {
             int target = Mathf.FloorToInt(Random.Range(0, possibleGridSpaces.Count - 0.01f));
-            CreateArea(possibleGridSpaces[target], (int)mSettings.GetCollectableAreaSize().x, 1, AreaType.NONE);
+            CreateArea(possibleGridSpaces[target], (int)mManager.GetMazePlayerSetting().GetCollectableAreaSize().x, 1, AreaType.NONE);
             possibleGridSpaces.Remove(possibleGridSpaces[target]);
         }
-        for (int i = 0; i < Mathf.CeilToInt(mSettings.GetNumCollectableAreas() / 2); i++)
+        for (int i = 0; i < Mathf.CeilToInt(mManager.GetMazePlayerSetting().GetNumCollectableAreas() / 2); i++)
         {
             int target = Mathf.FloorToInt(Random.Range(0, possibleGridSpaces.Count - 0.01f));
-            CreateArea(possibleGridSpaces[target], (int)mSettings.GetCollectableAreaSize().x, 1, AreaType.SCARECROW);
+            CreateArea(possibleGridSpaces[target], (int)mManager.GetMazePlayerSetting().GetCollectableAreaSize().x, 1, AreaType.SCARECROW);
             possibleGridSpaces.Remove(possibleGridSpaces[target]);
         }
     }
@@ -188,31 +190,31 @@ public class SC_MazeManager : MonoBehaviour
     private void GenerateKeyAreasCollect()
     {
         List<Vector2> possibleGridSpaces = new List<Vector2>();
-        for (int i = 0; i < mSettings.GetGridSpaces().x; i++)
+        for (int i = 0; i < mManager.GetMazePlayerSetting().GetGridSpaces().x; i++)
         {
-            for (int j = 0; j < mSettings.GetGridSpaces().y; j++)
+            for (int j = 0; j < mManager.GetMazePlayerSetting().GetGridSpaces().y; j++)
             {
                 possibleGridSpaces.Add(new Vector2(i, j));
             }
         }
 
         // CORNER AREA 1 & 2
-        CreateArea(new Vector2(0, 0), (int)mSettings.GetCornerAreaSize().x, 2, AreaType.SCARECROW);
+        CreateArea(new Vector2(0, 0), (int)mManager.GetMazePlayerSetting().GetCornerAreaSize().x, 2, AreaType.SCARECROW);
         possibleGridSpaces.Remove(new Vector2(0, 0));
 
-        CreateArea(new Vector2(0, mSettings.GetGridSpaces().y - 1), (int)mSettings.GetCornerAreaSize().x, 2, AreaType.SCARECROW);
-        possibleGridSpaces.Remove(new Vector2(0, mSettings.GetGridSpaces().y - 1));
+        CreateArea(new Vector2(0, mManager.GetMazePlayerSetting().GetGridSpaces().y - 1), (int)mManager.GetMazePlayerSetting().GetCornerAreaSize().x, 2, AreaType.SCARECROW);
+        possibleGridSpaces.Remove(new Vector2(0, mManager.GetMazePlayerSetting().GetGridSpaces().y - 1));
 
         // CENTER AREA 
-        CreateArea(new Vector2((int)mSettings.GetGridSpaces().x / 2, (int)mSettings.GetGridSpaces().y / 2), (int)mSettings.GetCenterAreaSize().x, 4, AreaType.KILLER_SPAWN);
-        possibleGridSpaces.Remove(new Vector2((int)mSettings.GetGridSpaces().x / 2, (int)mSettings.GetGridSpaces().y / 2));
+        CreateArea(new Vector2((int)mManager.GetMazePlayerSetting().GetGridSpaces().x / 2, (int)mManager.GetMazePlayerSetting().GetGridSpaces().y / 2), (int)mManager.GetMazePlayerSetting().GetCenterAreaSize().x, 4, AreaType.KILLER_SPAWN);
+        possibleGridSpaces.Remove(new Vector2((int)mManager.GetMazePlayerSetting().GetGridSpaces().x / 2, (int)mManager.GetMazePlayerSetting().GetGridSpaces().y / 2));
 
         // EXITS
         List<Vector2> exitTiles = new List<Vector2>();
 
-        for (int i = 0; i < mSettings.GetGridSpaces().y; i++)
+        for (int i = 0; i < mManager.GetMazePlayerSetting().GetGridSpaces().y; i++)
         {
-            exitTiles.Add(new Vector2(mSettings.GetGridSpaces().x - 1, i));
+            exitTiles.Add(new Vector2(mManager.GetMazePlayerSetting().GetGridSpaces().x - 1, i));
         }
 
         for (int i = 0; i < 3; i++)
@@ -224,17 +226,17 @@ public class SC_MazeManager : MonoBehaviour
         }
 
         // COLLECTABLE AREAS
-        for (int i = 0; i < mSettings.GetNumCollectableAreas(); i++)
+        for (int i = 0; i < mManager.GetMazePlayerSetting().GetNumCollectableAreas(); i++)
         {
             int target = Mathf.FloorToInt(Random.Range(0, possibleGridSpaces.Count - 0.01f));
-            CreateArea(possibleGridSpaces[target], (int)mSettings.GetCollectableAreaSize().x, 1, AreaType.COLLECTABLE);
+            CreateArea(possibleGridSpaces[target], (int)mManager.GetMazePlayerSetting().GetCollectableAreaSize().x, 1, AreaType.COLLECTABLE);
             possibleGridSpaces.Remove(possibleGridSpaces[target]);
         }
     }
 
     private void CreateArea(Vector2 location, int size, int exits, AreaType type)
     {
-        int gridSize = (mSettings.GetMazeGridSize() * 2) - 1;
+        int gridSize = (mManager.GetMazePlayerSetting().GetMazeGridSize() * 2) - 1;
 
         Vector2 minSpace = new Vector2(location.x * (gridSize + 1) + 1, location.y * (gridSize + 1) + 1);
         Vector2 maxSpace = new Vector2(minSpace.x + (gridSize - size) - 1, minSpace.y + (gridSize - size) - 1);
@@ -341,7 +343,7 @@ public class SC_MazeManager : MonoBehaviour
     private void CreateExit(Vector2 location)
     {
         int target;
-        int gridSize = (mSettings.GetMazeGridSize() * 2) - 1;
+        int gridSize = (mManager.GetMazePlayerSetting().GetMazeGridSize() * 2) - 1;
 
         Vector2 minSpace = new Vector2(location.x * (gridSize + 1) + 1, location.y * (gridSize + 1) + 1);
         Vector2 maxSpace = new Vector2(minSpace.x + (gridSize - gridSize) - 1, minSpace.y + (gridSize - gridSize) - 1);
@@ -455,7 +457,7 @@ public class SC_MazeManager : MonoBehaviour
             switch (mAllTiles[i].GetTileType())
             {
                 case SC_MazeTile.TileType.WALL:
-                    Instantiate(mWallTilePrefab, mAllTiles[i].gameObject.transform);
+                    temp = Instantiate(mWallTilePrefab, mAllTiles[i].gameObject.transform);
                     break;
 
                 case SC_MazeTile.TileType.HUNTED_SPAWN:
@@ -466,7 +468,6 @@ public class SC_MazeManager : MonoBehaviour
                     break;
 
                 case SC_MazeTile.TileType.KILLER_SPAWN:
-                    
                     temp = Instantiate(mKillerSpawnTilePrefab, mAllTiles[i].gameObject.transform);
 
                     rotation = Mathf.Floor(Random.Range(0, 3.99f)) * 90;
@@ -474,7 +475,7 @@ public class SC_MazeManager : MonoBehaviour
                     break;
 
                 case SC_MazeTile.TileType.COLLECTABLE_SPAWN:
-                    Instantiate(mCollectableSpawnTilePrefab, mAllTiles[i].gameObject.transform);
+                    temp = Instantiate(mCollectableSpawnTilePrefab, mAllTiles[i].gameObject.transform);
                     break;
 
                 case SC_MazeTile.TileType.SCARECROW:
@@ -486,17 +487,19 @@ public class SC_MazeManager : MonoBehaviour
 
                 case SC_MazeTile.TileType.WALKABLE:
                 default:
-                    Instantiate(mWalkableTilePrefab, mAllTiles[i].gameObject.transform);
+                    temp = Instantiate(mWalkableTilePrefab, mAllTiles[i].gameObject.transform);
                     break;
             }
+
+            temp.GetComponent<SC_TileMapData>().SetAttachedTile(mAllTiles[i]);
         }
     }
 
     private void CreateBorders()
     {
         float tileSize = mDefaultTile.GetComponent<SC_MazeTile>().GetAttachedObject().transform.lossyScale.x;
-        float mazeWidth = (mSettings.GetMazeSizeTiles().y * 2 + 1);
-        float mazeHeight = (mSettings.GetMazeSizeTiles().x * 2 + 1);
+        float mazeWidth = (mManager.GetMazePlayerSetting().GetMazeSizeTiles().y * 2 + 1);
+        float mazeHeight = (mManager.GetMazePlayerSetting().GetMazeSizeTiles().x * 2 + 1);
 
         GameObject temp;
 
@@ -516,7 +519,7 @@ public class SC_MazeManager : MonoBehaviour
         temp.transform.position = new Vector3((mBorderWidth + 1) * (tileSize / -2), 0, (mazeWidth - 1) * (tileSize / 2));
 
         // Bottom area 1
-        temp = Instantiate(mExteriorTilePrefab);
+        temp = Instantiate(mParkingLotTilePrefab);
         temp.transform.localScale = new Vector3(1, 1, mazeWidth);
         temp.transform.position = new Vector3(mazeHeight * tileSize, 0, (mazeWidth - 1) * (tileSize / 2));
 
@@ -561,4 +564,6 @@ public class SC_MazeManager : MonoBehaviour
         temp.transform.localScale = new Vector3(mBorderWidth - 3, 1, mazeWidth);
         temp.transform.position = new Vector3((tileSize / 2) * (mBorderWidth + (mazeHeight * 2)), 0, (mazeWidth - 1) * (tileSize / 2));
     }
+
+    public float GetTileSize() { return mDefaultTile.GetComponent<SC_MazeTile>().GetAttachedObject().transform.lossyScale.x; }
 }
