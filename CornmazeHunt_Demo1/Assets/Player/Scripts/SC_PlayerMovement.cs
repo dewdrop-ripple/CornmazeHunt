@@ -47,7 +47,12 @@ public class SC_PlayerMovement : MonoBehaviour
     // Start Delay
     [SerializeField] private bool mIsEnabled = false;
 
+    // Mapping
     [SerializeField] private int mMapFillInRadius = 3;
+    private bool mIsAnimating = false;
+    private float mAnimationTimer = 0;
+    private const float M_FILL_IN_ANIMATION_LENGTH = 5.5f;
+    [SerializeField] private Animator mFillInAnimation;
     
 
     private void Start()
@@ -72,6 +77,8 @@ public class SC_PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        UpdateCharacterData();
+
         if (!mIsEnabled)
         {
             return;
@@ -86,8 +93,6 @@ public class SC_PlayerMovement : MonoBehaviour
         {
             SetCursorLocked(true);
             mHUD.enabled = true;
-
-            UpdateCharacterData();
 
             // Movement
             SetLookRotation();
@@ -108,6 +113,29 @@ public class SC_PlayerMovement : MonoBehaviour
 
             // Move
             mCharacterController.Move(mKinematicMotion * Time.deltaTime); // Velocity is in m/s, so account for framerate
+        }
+    }
+
+    // Handle animation stuff
+    private void Update()
+    {
+        if (mIsAnimating)
+        {
+            if (mAnimationTimer < M_FILL_IN_ANIMATION_LENGTH)
+            {
+                mIsEnabled = false;
+                mAnimationTimer += Time.deltaTime;
+                mFillInAnimation.enabled = true;
+            }
+            else
+            {
+                mIsAnimating = false;
+                mIsEnabled = true;
+                mAnimationTimer = 0;
+                mFillInAnimation.enabled = false;
+
+                FindAnyObjectByType<SC_MazeManager>().FillInTilesAroundSpot(transform.position, mMapFillInRadius);
+            }
         }
     }
 
@@ -159,7 +187,7 @@ public class SC_PlayerMovement : MonoBehaviour
         // RMB
         if (Input.GetMouseButtonDown(1))
         {
-            FindAnyObjectByType<SC_MazeManager>().FillInTilesAroundSpot(transform.position, mMapFillInRadius);
+            mIsAnimating = true;
         }
 
         switch (mMovementSetting)
